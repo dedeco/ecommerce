@@ -1,4 +1,4 @@
-connection: "bigquery_public_data_looker"
+connection: "default_bigquery_connection"
 
 # include all the views
 include: "/views/*.view"

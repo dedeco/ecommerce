@@ -1,0 +1,13 @@
+[Looker]
+# Base URL for Looker API. Replace with your Looker instance API URL (usually port 19999 or 443)
+# Example: https://your-company.looker.com:19999 or https://looker-api.your-company.com
+base_url=https://your-looker-instance.looker.com:19999
+
+# API 3 Client ID (generated in Looker Admin -> Users -> API 3 Keys)
+client_id=your_client_id
+
+# API 3 Client Secret
+client_secret=your_client_secret
+
+# Set to false if using self-signed certificates (not recommended for production)
+verify_ssl=true

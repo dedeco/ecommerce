@@ -73,6 +73,3 @@ This branch demonstrates a **Rich Application** combining both the **Looker API*
     *   On load, the app will call the local backend endpoint `/api/brands`. The backend will query Looker API for distinct brands in the `order_items` explore and return them.
     *   A **custom HTML dropdown** will populate with these brands dynamically.
     *   Selecting a brand from the dropdown will send a message via the Embed SDK to filter the embedded `business_pulse` dashboard by that brand and refresh it.
-
-
-

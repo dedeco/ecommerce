@@ -64,5 +64,3 @@ This branch demonstrates the **Looker Embed SDK** for interactive embedding.
     *   You will see **custom buttons** at the top of the page ("Filter: California", "Filter: New York").
     *   Clicking these buttons will send a message via the Embed SDK to the Looker iframe, updating the `State` filter and running the dashboard automatically.
     *   Open the browser's developer console (F12) to see logs of Looker events being captured by the host page.
-
-

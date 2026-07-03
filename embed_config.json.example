@@ -1,0 +1,5 @@
+{
+  "looker_url": "https://your-looker-instance.looker.com",
+  "embed_secret": "your_embed_secret_from_looker_admin",
+  "dashboard_id": "training_ecommerce::business_pulse"
+}

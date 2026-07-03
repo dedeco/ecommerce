@@ -33,36 +33,46 @@ We have implemented several LookML features, which are documented and code-comme
 *   **Branch:** `embed-step03-embed-sdk`
 *   **Description:** Demonstrates how to use Looker's Embed SDK to establish bi-directional communication, listen to events, and send actions (like filtering) to the embedded dashboard.
 
+### 7. Rich Application (Advanced Integration)
+*   **Branch:** `embed-step04-rich-app`
+*   **Description:** Implements a full data application portal. It uses Looker API (Python SDK) to dynamically fetch filter options (Brands) from the database and uses the Embed SDK to apply the user's selection to the embedded `business_pulse` dashboard.
+
 ---
 
-## Looker Integration & Embedding Tutorials - Step 3
+## Looker Integration & Embedding Tutorials - Step 4
 
-This branch demonstrates the **Looker Embed SDK** for interactive embedding.
+This branch demonstrates a **Rich Application** combining both the **Looker API** and the **Embed SDK**.
 
 ### Key Files:
-*   [sso_server.py](sso_server.py): Updated Python script. It now generates the signed SSO URL (including `embed_domain`) and serves an HTML page integrated with the Looker Embed SDK.
-*   [embed_config.json.example](embed_config.json.example): Template for configuration.
+*   [sso_server.py](sso_server.py): Updated Python script. It now uses the `looker-sdk` to query Looker's API and acts as a local API gateway, serving the frontend, fetching brands from Looker, and generating signed SSO URLs.
+*   [embed_config.json.example](embed_config.json.example): Template for embed configuration.
+*   [looker.ini.example](looker.ini.example): Template for Looker API credentials.
 
-### How to run the Embed SDK Demo:
+### How to run the Rich Application Demo:
 
-1.  **Configure Credentials:**
-    Copy `embed_config.json.example` to `embed_config.json`:
+1.  **Install Looker Python SDK:**
+    ```bash
+    pip install looker-sdk
+    ```
+2.  **Configure API Credentials:**
+    Copy `looker.ini.example` to `looker.ini` and fill in your Looker API credentials:
+    ```bash
+    cp looker.ini.example looker.ini
+    ```
+3.  **Configure Embed Credentials:**
+    Copy `embed_config.json.example` to `embed_config.json` and fill in your Embed secret and dashboard details:
     ```bash
     cp embed_config.json.example embed_config.json
     ```
-2.  **Edit Configuration:**
-    Edit `embed_config.json` and fill in:
-    *   `looker_url`: Your Looker instance URL (e.g., `https://your-company.looker.com`).
-    *   `embed_secret`: The Embed Secret from Looker Admin -> Platform -> Embed.
-    *   `dashboard_id`: The ID of the dashboard (`training_ecommerce::business_pulse`).
-3.  **Run the Server:**
+4.  **Run the Server:**
     ```bash
     python3 sso_server.py
     ```
-4.  **View the Interactive Embed:**
+5.  **Test the Portal:**
     *   Open your browser and navigate to `http://localhost:8080`.
-    *   You will see **custom buttons** at the top of the page ("Filter: California", "Filter: New York").
-    *   Clicking these buttons will send a message via the Embed SDK to the Looker iframe, updating the `State` filter and running the dashboard automatically.
-    *   Open the browser's developer console (F12) to see logs of Looker events being captured by the host page.
+    *   On load, the app will call the local backend endpoint `/api/brands`. The backend will query Looker API for distinct brands in the `order_items` explore and return them.
+    *   A **custom HTML dropdown** will populate with these brands dynamically.
+    *   Selecting a brand from the dropdown will send a message via the Embed SDK to filter the embedded `business_pulse` dashboard by that brand and refresh it.
+
 
 

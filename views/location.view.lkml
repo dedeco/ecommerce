@@ -1,3 +1,6 @@
+# This is a base view that defines common location dimensions.
+# It uses 'extension: required' which means it cannot be used directly in an Explore.
+# Other views must extend this view to reuse these dimensions.
 view: location {
   extension: required
 

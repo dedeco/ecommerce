@@ -1,8 +1,11 @@
+# Include the base location view definition
 include: location.view
 
 view: events {
   sql_table_name: `cloud-training-demos.looker_ecomm.events`
     ;;
+  # Inherit location dimensions (city, state, zip, country, latitude, longitude)
+  # from the location view using the extends parameter.
   extends: [location]
   drill_fields: [id]
 

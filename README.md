@@ -49,4 +49,3 @@ We are implementing a step-by-step guide for Looker API and Embedding.
     ```bash
     python3 looker_api_demo.py
     ```
-

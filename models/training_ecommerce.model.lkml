@@ -78,4 +78,3 @@ explore: conversions {
     relationship: many_to_many
   }
 }
-}

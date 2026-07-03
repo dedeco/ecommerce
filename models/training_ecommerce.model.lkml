@@ -15,6 +15,7 @@ persist_with: training_ecommerce_default_datagroup
 label: "E-Commerce Training"
 
 explore: order_items {
+  from: order_items_extended
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;

@@ -29,17 +29,21 @@ We have implemented several LookML features, which are documented and code-comme
 *   **Branch:** `embed-step02-sso`
 *   **Description:** Demonstrates how to securely embed the `business_pulse` LookML dashboard using signed SSO URLs and a local Python server.
 
+### 6. Looker Embed SDK (Interactive Dashboard)
+*   **Branch:** `embed-step03-embed-sdk`
+*   **Description:** Demonstrates how to use Looker's Embed SDK to establish bi-directional communication, listen to events, and send actions (like filtering) to the embedded dashboard.
+
 ---
 
-## Looker Integration & Embedding Tutorials - Step 2
+## Looker Integration & Embedding Tutorials - Step 3
 
-This branch demonstrates **Secure SSO Embedding**.
+This branch demonstrates the **Looker Embed SDK** for interactive embedding.
 
 ### Key Files:
-*   [sso_server.py](sso_server.py): Python script that generates the signed SSO URL and runs a local web server to display the embedded dashboard in an iframe.
+*   [sso_server.py](sso_server.py): Updated Python script. It now generates the signed SSO URL (including `embed_domain`) and serves an HTML page integrated with the Looker Embed SDK.
 *   [embed_config.json.example](embed_config.json.example): Template for configuration.
 
-### How to run the SSO Embed Demo:
+### How to run the Embed SDK Demo:
 
 1.  **Configure Credentials:**
     Copy `embed_config.json.example` to `embed_config.json`:
@@ -55,6 +59,10 @@ This branch demonstrates **Secure SSO Embedding**.
     ```bash
     python3 sso_server.py
     ```
-4.  **View the Embed:**
-    Open your browser and navigate to `http://localhost:8080`.
+4.  **View the Interactive Embed:**
+    *   Open your browser and navigate to `http://localhost:8080`.
+    *   You will see **custom buttons** at the top of the page ("Filter: California", "Filter: New York").
+    *   Clicking these buttons will send a message via the Embed SDK to the Looker iframe, updating the `State` filter and running the dashboard automatically.
+    *   Open the browser's developer console (F12) to see logs of Looker events being captured by the host page.
+
 

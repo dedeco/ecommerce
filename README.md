@@ -57,4 +57,3 @@ This branch demonstrates **Secure SSO Embedding**.
     ```
 4.  **View the Embed:**
     Open your browser and navigate to `http://localhost:8080`.
-

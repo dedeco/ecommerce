@@ -40,6 +40,8 @@ explore: order_items {
   }
 }
 
+# Base Explore that serves as a template.
+# 'extension: required' means it won't be visible to users in the Explore menu.
 explore: base_events {
   extension: required
   join: event_session_facts {
@@ -53,6 +55,8 @@ explore: base_events {
   }
 }
 
+# This Explore extends 'base_events', inheriting its joins (event_session_facts, users).
+# It adds a specific join (event_session_funnel) for event analysis.
 explore: events {
   description: "Start here for Event analysis"
   fields: [ALL_FIELDS*]
@@ -66,6 +70,9 @@ explore: events {
   }
 }
 
+# This Explore also extends 'base_events'.
+# It adds 'order_items' join and demonstrates how to exclude specific fields
+# using the syntax: [ALL_FIELDS*, -view_name.field_to_exclude].
 explore: conversions {
   description: "Start here for Conversion Analysis"
   fields: [ALL_FIELDS*, -order_items.total_revenue_from_completed_orders]

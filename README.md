@@ -1,32 +1,52 @@
-# Ecommerce
-Repository demo
+# Ecommerce LookML Project
 
-## LookML Extends
+This repository contains a LookML model for e-commerce analysis.
 
-This repository demonstrates how to use LookML **Extends** to modularize and reuse code for both Views and Explores.
+## Project Structure & Features
 
-### Step 1: View Extends (Implemented in `views/`)
+We have implemented several LookML features, which are documented and code-commented in their respective branches:
 
-We created a base view to share location dimensions across multiple views.
+### 1. Year-over-Year (YOY) Metrics
+*   **Branch:** `feature/yoy-metrics`
+*   **Description:** Implements native Period-over-Period (PoP) YOY metrics for the `order_items` Explore.
+*   **Key Files:**
+    *   `views/order_items_extended.view.lkml` (extends `order_items` to add YOY measures)
+    *   `models/training_ecommerce.model.lkml` (configured to use the extended view)
 
-1.  **Created a base view `location`** in `views/location.view.lkml`.
-    *   Defines common location-related dimensions: `city`, `state`, `zip`, `country`, `latitude`, and `longitude`.
-    *   Uses `extension: required` to prevent direct use in Explores.
-2.  **Extended `users` and `events` views** to inherit from `location`.
-    *   Added `extends: [location]` to both views.
-    *   Removed duplicate dimension definitions.
+### 2. LookML Extends - Step 1: View Extends
+*   **Branch:** `step01`
+*   **Description:** Demonstrates how to reuse common location dimensions (city, state, etc.) by creating a base `location` view and extending `users` and `events` views with it.
 
-### Step 2: Explore Extends (Implemented in `models/training_ecommerce.model.lkml`)
+### 3. LookML Extends - Step 2: Explore Extends
+*   **Branch:** `step02`
+*   **Description:** Demonstrates how to reuse a core set of joins by creating a base `base_events` Explore and extending it to create `events` and `conversions` Explores. Also demonstrates field exclusion in extended Explores.
 
-We created a base Explore to share a core set of joins across multiple Explores.
+---
 
-1.  **Created a base Explore `base_events`**:
-    *   Joins `events` with `event_session_facts` and `users`.
-    *   Uses `extension: required` so it is not visible to users in the Explore menu.
-2.  **Extended `events` Explore**:
-    *   Uses `extends: [base_events]` to inherit the core joins.
-    *   Adds a specific join to `event_session_funnel`.
-3.  **Extended `conversions` Explore**:
-    *   Uses `extends: [base_events]` to inherit the core joins.
-    *   Adds a join to `order_items`.
-    *   Demonstrates field exclusion by removing `order_items.total_revenue_from_completed_orders` from the Explore field list using `fields: [ALL_FIELDS*, -order_items.total_revenue_from_completed_orders]`.
+## Looker Integration & Embedding Tutorials
+
+We are implementing a step-by-step guide for Looker API and Embedding.
+
+### Step 1: Looker API (Pure SDK)
+*   **Branch:** `embed-step01-api`
+*   **Description:** Demonstrates how to authenticate with Looker API using the Python SDK and run queries programmatically.
+*   **Key Files:**
+    *   `looker_api_demo.py`: Python script to run a query.
+    *   `looker.ini.example`: Template for API credentials.
+
+#### How to run the API Demo:
+
+1.  **Install the Looker SDK:**
+    ```bash
+    pip install looker-sdk
+    ```
+2.  **Configure Credentials:**
+    Copy `looker.ini.example` to `looker.ini` and fill in your Looker Service Account API keys (generated via Looker Admin -> Users -> Service Accounts):
+    ```bash
+    cp looker.ini.example looker.ini
+    ```
+3.  **Run the script:**
+    ```bash
+    python3 looker_api_demo.py
+    ```
+>>>>>>> branch 'master' of https://github.com/dedeco/ecommerce.git

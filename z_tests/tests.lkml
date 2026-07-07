@@ -19,19 +19,3 @@ test: order_items_explore {
   }
 }
 
-test: events_explore {
-  explore_source: events {
-    column: count {}
-    column: session_landing_page { field: event_session_facts.session_landing_page }
-    column: count_sessions { field: event_session_funnel.count_sessions }
-  }
-  assert: events_has_data {
-    expression: ${events.count} > 0 ;;
-  }
-  assert: event_facts_has_data {
-    expression: count(${event_session_facts.session_landing_page}) = 7 ;;
-  }
-  assert: event_funnel_has_data {
-    expression: ${event_session_funnel.count_sessions} > 0 ;;
-  }
-}

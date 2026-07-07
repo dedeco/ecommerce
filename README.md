@@ -44,7 +44,7 @@ This branch demonstrates **Secure SSO Embedding**.
 1.  **Configure Credentials:**
     Copy `embed_config.json.example` to `embed_config.json`:
     ```bash
-    cp embed_config.json.example embed_config.json
+    cp embed_demo/embed_config.json.example embed_demo/embed_config.json
     ```
 2.  **Edit Configuration:**
     Edit `embed_config.json` and fill in:
@@ -53,6 +53,7 @@ This branch demonstrates **Secure SSO Embedding**.
     *   `dashboard_id`: The ID of the dashboard (`training_ecommerce::business_pulse`).
 3.  **Run the Server:**
     ```bash
+    cd embed_demo
     python3 sso_server.py
     ```
 4.  **View the Embed:**

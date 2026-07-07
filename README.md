@@ -43,10 +43,11 @@ We are implementing a step-by-step guide for Looker API and Embedding.
 2.  **Configure Credentials:**
     Copy `looker.ini.example` to `looker.ini` and fill in your Looker Service Account API keys (generated via Looker Admin -> Users -> Service Accounts):
     ```bash
-    cp looker.ini.example looker.ini
+    cp embed_demo/looker.ini.example embed_demo/looker.ini
     ```
 3.  **Run the script:**
     ```bash
+    cd embed_demo
     python3 looker_api_demo.py
     ```
 >>>>>>> branch 'master' of https://github.com/dedeco/ecommerce.git

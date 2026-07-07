@@ -50,3 +50,4 @@ We are implementing a step-by-step guide for Looker API and Embedding.
     cd embed_demo
     python3 looker_api_demo.py
     ```
+>>>>>>> branch 'master' of https://github.com/dedeco/ecommerce.git

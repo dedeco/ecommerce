@@ -1,6 +1,9 @@
+include: location.view
+
 view: events {
   sql_table_name: `cloud-training-demos.looker_ecomm.events`
     ;;
+  extends: [location]
   drill_fields: [id]
 
   dimension: id {
@@ -20,16 +23,6 @@ view: events {
     sql: ${TABLE}.browser ;;
   }
 
-  dimension: city {
-    type: string
-    sql: ${TABLE}.city ;;
-  }
-
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
-  }
 
   dimension_group: created {
     type: time
@@ -55,16 +48,6 @@ view: events {
     sql: ${TABLE}.ip_address ;;
   }
 
-  dimension: latitude {
-    type: number
-    sql: ${TABLE}.latitude ;;
-  }
-
-  dimension: longitude {
-    type: number
-    sql: ${TABLE}.longitude ;;
-  }
-
   dimension: os {
     type: string
     sql: ${TABLE}.os ;;
@@ -85,10 +68,6 @@ view: events {
     sql: ${TABLE}.session_id ;;
   }
 
-  dimension: state {
-    type: string
-    sql: ${TABLE}.state ;;
-  }
 
   dimension: traffic_source {
     type: string
@@ -106,10 +85,6 @@ view: events {
     sql: ${TABLE}.user_id ;;
   }
 
-  dimension: zip {
-    type: zipcode
-    sql: ${TABLE}.zip ;;
-  }
 
   measure: count {
     type: count

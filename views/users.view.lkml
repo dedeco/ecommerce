@@ -1,6 +1,8 @@
+include: location.view
 view: users {
   sql_table_name: `cloud-training-demos.looker_ecomm.users`
     ;;
+  extends:  [location]
   drill_fields: [id]
 
   dimension: id {
@@ -12,17 +14,6 @@ view: users {
   dimension: age {
     type: number
     sql: ${TABLE}.age ;;
-  }
-
-  dimension: city {
-    type: string
-    sql: ${TABLE}.city ;;
-  }
-
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
   }
 
   dimension_group: created {
@@ -59,30 +50,9 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
-  dimension: latitude {
-    type: number
-    sql: ${TABLE}.latitude ;;
-  }
-
-  dimension: longitude {
-    type: number
-    sql: ${TABLE}.longitude ;;
-  }
-
-  dimension: state {
-    type: string
-    sql: ${TABLE}.state ;;
-    map_layer_name: us_states
-  }
-
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
-  }
-
-  dimension: zip {
-    type: zipcode
-    sql: ${TABLE}.zip ;;
   }
 
   measure: count {

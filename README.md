@@ -41,7 +41,7 @@ We are implementing a step-by-step guide for Looker API and Embedding.
     pip install looker-sdk
     ```
 2.  **Configure Credentials:**
-    Copy `looker.ini.example` to `looker.ini` and fill in your Looker API keys:
+    Copy `looker.ini.example` to `looker.ini` and fill in your Looker Service Account API keys (generated via Looker Admin -> Users -> Service Accounts):
     ```bash
     cp looker.ini.example looker.ini
     ```

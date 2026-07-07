@@ -19,10 +19,11 @@ This document outlines the architecture, configuration requirements, and testing
 
 Before testing the approaches, two configuration files must be populated with valid credentials from your Looker instance (`https://9ced7b3e-c0b9-44fe-b0da-e73fdf7cbc1c.looker.app`):
 
-### 1. API 3 Credentials ([looker.ini](file:///usr/local/google/home/andresousa/projects/ecommerce/looker.ini))
+### 1. Service Account API Credentials ([looker.ini](file:///usr/local/google/home/andresousa/projects/ecommerce/looker.ini))
 Required for **Step 1** and **Step 4**.
-1. Navigate to Looker Admin $\rightarrow$ Users $\rightarrow$ **API 3 Keys** and generate a new key pair.
-2. Update [looker.ini](file:///usr/local/google/home/andresousa/projects/ecommerce/looker.ini):
+1. Navigate to Looker **Admin** $\rightarrow$ **Users** $\rightarrow$ **Service Accounts** and create a dedicated Service Account for your integration.
+2. Click **API Keys** under that Service Account and generate a new key pair (**Client ID** and **Client Secret**).
+3. Update [looker.ini](file:///usr/local/google/home/andresousa/projects/ecommerce/looker.ini):
 ```ini
 [Looker]
 base_url=https://9ced7b3e-c0b9-44fe-b0da-e73fdf7cbc1c.looker.app

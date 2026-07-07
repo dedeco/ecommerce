@@ -55,7 +55,7 @@ This branch demonstrates a **Rich Application** combining both the **Looker API*
     pip install looker-sdk
     ```
 2.  **Configure API Credentials:**
-    Copy `looker.ini.example` to `looker.ini` and fill in your Looker API credentials:
+    Copy `looker.ini.example` to `looker.ini` and fill in your Looker Service Account API credentials (generated via Looker Admin -> Users -> Service Accounts):
     ```bash
     cp looker.ini.example looker.ini
     ```

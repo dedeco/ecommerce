@@ -3,7 +3,7 @@
 # Example: https://your-company.looker.com:19999 or https://looker-api.your-company.com
 base_url=https://your-looker-instance.looker.com:19999
 
-# API 3 Client ID (generated in Looker Admin -> Users -> API 3 Keys)
+# Service Account API Client ID (generated via Looker Admin -> Users -> Service Accounts -> API Keys)
 client_id=your_client_id
 
 # API 3 Client Secret

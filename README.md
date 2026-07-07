@@ -57,15 +57,16 @@ This branch demonstrates a **Rich Application** combining both the **Looker API*
 2.  **Configure API Credentials:**
     Copy `looker.ini.example` to `looker.ini` and fill in your Looker Service Account API credentials (generated via Looker Admin -> Users -> Service Accounts):
     ```bash
-    cp looker.ini.example looker.ini
+    cp embed_demo/looker.ini.example embed_demo/looker.ini
     ```
 3.  **Configure Embed Credentials:**
     Copy `embed_config.json.example` to `embed_config.json` and fill in your Embed secret and dashboard details:
     ```bash
-    cp embed_config.json.example embed_config.json
+    cp embed_demo/embed_config.json.example embed_demo/embed_config.json
     ```
 4.  **Run the Server:**
     ```bash
+    cd embed_demo
     python3 sso_server.py
     ```
 5.  **Test the Portal:**

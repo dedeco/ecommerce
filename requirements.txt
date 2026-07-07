@@ -1,0 +1,4 @@
+# Looker SDK for Python
+# Required for programmatic query execution in Step 1 (looker_api_demo.py) 
+# and dynamic API filter queries in Step 4 (sso_server.py).
+looker-sdk>=23.0.0

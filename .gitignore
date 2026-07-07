@@ -1,0 +1,7 @@
+.idea/
+looker.ini
+embed_config.json
+*.pyc
+__pycache__/
+.venv/
+venv/

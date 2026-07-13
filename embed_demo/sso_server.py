@@ -49,17 +49,21 @@ def load_embed_config():
         return json.load(f)
 
 def generate_sso_url(config, embed_domain):
-    """Generates a signed Looker SSO Embed URL."""
-    looker_url = config["looker_url"]
-    secret = config["embed_secret"]
+    """Generates a signed Looker SSO Embed URL or Private Embed URL."""
+    looker_url = config["looker_url"].rstrip("/")
+    secret = config.get("embed_secret", "")
     dashboard_id = config["dashboard_id"]
+
+    if not secret or secret in ["none", "enterprise", "your_embed_secret_from_looker_admin", "your_embed_secret_here"]:
+        print("Note: Running in Private Embedding Mode (no Embed Secret provided). Using standard Looker session authentication.")
+        return f"{looker_url}/embed/dashboards/{dashboard_id}?allow_login_screen=true&theme=Looker&sdk=2&embed_domain={embed_domain}"
 
     parsed_url = urllib.parse.urlparse(looker_url)
     host = parsed_url.netloc
     if ":" not in host:
         host = f"{host}:443"
 
-    target_path = f"/embed/dashboards/{dashboard_id}"
+    target_path = f"/embed/dashboards/{dashboard_id}?embed_domain={embed_domain}&sdk=2"
     login_path = f"/login/embed/{urllib.parse.quote_plus(target_path)}"
 
     external_user_id = "demo_rich_user"
@@ -165,7 +169,7 @@ class RichAppHandler(BaseHTTPRequestHandler):
                 code {{ background: #eef; padding: 2px 4px; border-radius: 4px; }}
             </style>
             <!-- Load Looker Embed SDK -->
-            <script src="https://unpkg.com/@looker/embed-sdk@1.8.0/dist/embed-sdk.js"></script>
+            <script src="https://unpkg.com/@looker/embed-sdk@1.8.0/dist/main.js"></script>
         </head>
         <body>
             <div class="header">
@@ -189,8 +193,14 @@ class RichAppHandler(BaseHTTPRequestHandler):
             <script>
                 let activeDashboard = null;
 
-                // 1. Initialize Embed SDK with Looker Base URL
-                LookerEmbedSDK.init('{looker_url}');
+                // 1. Initialize Embed SDK (resolve UMD namespace export LookerEmbedSDK.LookerEmbedSDK)
+                const EmbedSDK = (window.LookerEmbedSDK && window.LookerEmbedSDK.LookerEmbedSDK) ? window.LookerEmbedSDK.LookerEmbedSDK : window.LookerEmbedSDK;
+                if (!EmbedSDK || typeof EmbedSDK.init !== 'function') {{
+                    console.error("LookerEmbedSDK failed to resolve correctly. window.LookerEmbedSDK:", window.LookerEmbedSDK);
+                }} else {{
+                    window.LookerEmbedSDK = EmbedSDK;
+                }}
+                EmbedSDK.init('{looker_url}');
 
                 // 2. Load everything on page load
                 window.onload = async () => {{
@@ -242,11 +252,14 @@ class RichAppHandler(BaseHTTPRequestHandler):
                         const response = await fetch('/api/embed-url');
                         if (!response.ok) throw new Error('Failed to fetch embed URL');
                         const data = await response.json();
-                        const ssoUrl = data.url;
+                        let targetUrl = data.url;
+                        if (targetUrl.indexOf('sdk=2') === -1) {{
+                            const sep = targetUrl.indexOf('?') !== -1 ? '&' : '?';
+                            targetUrl += sep + 'sdk=2&embed_domain=' + encodeURIComponent(window.location.origin);
+                        }}
+                        console.log("Embedding dashboard using fetched SSO URL:", targetUrl);
 
-                        console.log("Embedding dashboard using fetched SSO URL...");
-
-                        LookerEmbedSDK.createDashboardWithUrl(ssoUrl)
+                        EmbedSDK.createDashboardWithUrl(targetUrl)
                             .appendTo('#dashboard-container')
                             .withClassName('looker-embed')
                             .on('dashboard:run:start', () => updateStatus('Looker is running queries...'))

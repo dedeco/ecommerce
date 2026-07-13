@@ -11,12 +11,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # Import Looker SDK (required for Step 4 API calls)
 try:
-    import looker_sdk
-    from looker_sdk import models40 as models
+  import looker_sdk
+  from looker_sdk import models40 as models
 except ImportError:
-    print("Warning: looker_sdk Python library not found.")
-    print("Please install it using: pip install looker-sdk")
-    # We don't exit immediately so the server can still start and show errors in browser
+  print("Warning: looker_sdk Python library not found.")
+  print("Please install it using: pip install looker-sdk")
+  # We don't exit immediately so the server can still start and show errors in browser
 
 # Configuration files
 EMBED_CONFIG_FILE = "embed_config.json"
@@ -25,135 +25,143 @@ LOOKER_INI_FILE = "looker.ini"
 # Global API SDK instance
 api_sdk = None
 
+
 def get_api_sdk():
-    """Initializes and returns the Looker API SDK instance."""
-    global api_sdk
-    if api_sdk is None:
-        if os.path.exists(LOOKER_INI_FILE):
-            try:
-                print("Initializing Looker API SDK...")
-                api_sdk = looker_sdk.init40()
-            except Exception as e:
-                print(f"Error initializing Looker API SDK: {e}")
-        else:
-            print(f"Warning: {LOOKER_INI_FILE} not found. API features will fail.")
-    return api_sdk
+  """Initializes and returns the Looker API SDK instance."""
+  global api_sdk
+  if api_sdk is None:
+    if os.path.exists(LOOKER_INI_FILE):
+      try:
+        print("Initializing Looker API SDK...")
+        api_sdk = looker_sdk.init40()
+      except Exception as e:
+        print(f"Error initializing Looker API SDK: {e}")
+    else:
+      print(f"Warning: {LOOKER_INI_FILE} not found. API features will fail.")
+  return api_sdk
+
 
 def load_embed_config():
-    """Loads embedding configuration."""
-    if not os.path.exists(EMBED_CONFIG_FILE):
-        print(f"Error: {EMBED_CONFIG_FILE} not found.")
-        print("Please copy embed_config.json.example to embed_config.json and fill in settings.")
-        sys.exit(1)
-    with open(EMBED_CONFIG_FILE, "r") as f:
-        return json.load(f)
+  """Loads embedding configuration."""
+  if not os.path.exists(EMBED_CONFIG_FILE):
+    print(f"Error: {EMBED_CONFIG_FILE} not found.")
+    print(
+      "Please copy embed_config.json.example to embed_config.json and fill in settings.")
+    sys.exit(1)
+  with open(EMBED_CONFIG_FILE, "r") as f:
+    return json.load(f)
+
 
 def generate_sso_url(config, embed_domain):
-    """Generates a signed Looker SSO Embed URL or Private Embed URL."""
-    looker_url = config["looker_url"].rstrip("/")
-    secret = config.get("embed_secret", "")
-    dashboard_id = config["dashboard_id"]
+  """Generates a signed Looker SSO Embed URL or Private Embed URL."""
+  looker_url = config["looker_url"].rstrip("/")
+  secret = config.get("embed_secret", "")
+  dashboard_id = config["dashboard_id"]
 
-    if not secret or secret in ["none", "enterprise", "your_embed_secret_from_looker_admin", "your_embed_secret_here"]:
-        print("Note: Running in Private Embedding Mode (no Embed Secret provided). Using standard Looker session authentication.")
-        return f"{looker_url}/embed/dashboards/{dashboard_id}?allow_login_screen=true&theme=Looker&sdk=2&embed_domain={embed_domain}"
+  if not secret or secret in ["none", "enterprise",
+                              "your_embed_secret_from_looker_admin",
+                              "your_embed_secret_here"]:
+    print(
+      "Note: Running in Private Embedding Mode (no Embed Secret provided). Using standard Looker session authentication.")
+    return f"{looker_url}/embed/dashboards/{dashboard_id}?allow_login_screen=true&theme=Looker&sdk=2&embed_domain={embed_domain}"
 
-    parsed_url = urllib.parse.urlparse(looker_url)
-    host = parsed_url.netloc
-    if ":" not in host:
-        host = f"{host}:443"
+  parsed_url = urllib.parse.urlparse(looker_url)
+  host = parsed_url.netloc
+  if ":" not in host:
+    host = f"{host}:443"
 
-    target_path = f"/embed/dashboards/{dashboard_id}?embed_domain={embed_domain}&sdk=2"
-    login_path = f"/login/embed/{urllib.parse.quote_plus(target_path)}"
+  target_path = f"/embed/dashboards/{dashboard_id}?embed_domain={embed_domain}&sdk=2"
+  login_path = f"/login/embed/{urllib.parse.quote_plus(target_path)}"
 
-    external_user_id = "demo_rich_user"
-    first_name = "RichApp"
-    last_name = "User"
-    
-    permissions = ["access_data", "see_user_dashboards"]
-    models = ["training_ecommerce"]
-    group_ids = []
-    external_group_id = "demo_group"
-    user_attributes = {}
-    force_logout_login = "true"
-    
-    session_length = 3600
-    nonce = uuid.uuid4().hex
-    current_time = str(int(time.time()))
+  external_user_id = "demo_rich_user"
+  first_name = "RichApp"
+  last_name = "User"
 
-    path_to_sign = "\n".join([
-        host,
-        login_path,
-        nonce,
-        current_time,
-        str(session_length),
-        external_user_id,
-        json.dumps(permissions),
-        json.dumps(models),
-        json.dumps(group_ids),
-        external_group_id,
-        json.dumps(user_attributes),
-        force_logout_login
-    ])
+  permissions = ["access_data", "see_user_dashboards"]
+  models = ["training_ecommerce"]
+  group_ids = []
+  external_group_id = "demo_group"
+  user_attributes = {}
+  force_logout_login = "true"
 
-    key = secret.encode('utf-8')
-    msg = path_to_sign.encode('utf-8')
-    sig = hmac.new(key, msg, hashlib.sha1).digest()
-    signature = base64.b64encode(sig).decode('utf-8')
+  session_length = 3600
+  nonce = uuid.uuid4().hex
+  current_time = str(int(time.time()))
 
-    query_params = {
-        "nonce": nonce,
-        "time": current_time,
-        "session_length": str(session_length),
-        "external_user_id": external_user_id,
-        "permissions": json.dumps(permissions),
-        "models": json.dumps(models),
-        "group_ids": json.dumps(group_ids),
-        "external_group_id": external_group_id,
-        "user_attributes": json.dumps(user_attributes),
-        "force_logout_login": force_logout_login,
-        "signature": signature,
-        "first_name": first_name,
-        "last_name": last_name,
-        "embed_domain": embed_domain
-    }
+  path_to_sign = "\n".join([
+      host,
+      login_path,
+      nonce,
+      current_time,
+      str(session_length),
+      external_user_id,
+      json.dumps(permissions),
+      json.dumps(models),
+      json.dumps(group_ids),
+      external_group_id,
+      json.dumps(user_attributes),
+      force_logout_login
+  ])
 
-    encoded_params = urllib.parse.urlencode(query_params)
-    sso_url = f"{looker_url}{login_path}?{encoded_params}"
-    return sso_url
+  key = secret.encode('utf-8')
+  msg = path_to_sign.encode('utf-8')
+  sig = hmac.new(key, msg, hashlib.sha1).digest()
+  signature = base64.b64encode(sig).decode('utf-8')
+
+  query_params = {
+      "nonce": nonce,
+      "time": current_time,
+      "session_length": str(session_length),
+      "external_user_id": external_user_id,
+      "permissions": json.dumps(permissions),
+      "models": json.dumps(models),
+      "group_ids": json.dumps(group_ids),
+      "external_group_id": external_group_id,
+      "user_attributes": json.dumps(user_attributes),
+      "force_logout_login": force_logout_login,
+      "signature": signature,
+      "first_name": first_name,
+      "last_name": last_name,
+      "embed_domain": embed_domain
+  }
+
+  encoded_params = urllib.parse.urlencode(query_params)
+  sso_url = f"{looker_url}{login_path}?{encoded_params}"
+  return sso_url
+
 
 class RichAppHandler(BaseHTTPRequestHandler):
-    """Router for the Rich Application (API + Embed)."""
-    
-    def send_error_response(self, code, message):
-        self.send_response(code)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(message.encode("utf-8"))
+  """Router for the Rich Application (API + Embed)."""
 
-    def do_GET(self):
-        # Route: Home Page
-        if self.path == "/":
-            self.serve_html()
-        
-        # Route: API to get signed SSO URL
-        elif self.path == "/api/embed-url":
-            self.serve_embed_url()
-        
-        # Route: API to get Brands list (calls Looker API)
-        elif self.path == "/api/brands":
-            self.serve_brands()
-            
-        else:
-            self.send_response(404)
-            self.end_headers()
+  def send_error_response(self, code, message):
+    self.send_response(code)
+    self.send_header("Content-type", "text/plain")
+    self.end_headers()
+    self.wfile.write(message.encode("utf-8"))
 
-    def serve_html(self):
-        config = load_embed_config()
-        # We inject the Looker URL into the frontend so the Embed SDK knows where to point
-        looker_url = config["looker_url"]
-        
-        html = f"""
+  def do_GET(self):
+    # Route: Home Page
+    if self.path == "/":
+      self.serve_html()
+
+    # Route: API to get signed SSO URL
+    elif self.path == "/api/embed-url":
+      self.serve_embed_url()
+
+    # Route: API to get Brands list (calls Looker API)
+    elif self.path == "/api/brands":
+      self.serve_brands()
+
+    else:
+      self.send_response(404)
+      self.end_headers()
+
+  def serve_html(self):
+    config = load_embed_config()
+    # We inject the Looker URL into the frontend so the Embed SDK knows where to point
+    looker_url = config["looker_url"]
+
+    html = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -300,67 +308,70 @@ class RichAppHandler(BaseHTTPRequestHandler):
         </body>
         </html>
         """
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(html.encode("utf-8"))
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    self.wfile.write(html.encode("utf-8"))
 
-    def serve_embed_url(self):
-        config = load_embed_config()
-        host_header = self.headers.get("Host", "localhost:8080")
-        embed_domain = f"http://{host_header}"
-        try:
-            sso_url = generate_sso_url(config, embed_domain)
-            response_data = {"url": sso_url}
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(response_data).encode("utf-8"))
-        except Exception as e:
-            self.send_error_response(500, f"Error generating SSO URL: {e}")
+  def serve_embed_url(self):
+    config = load_embed_config()
+    host_header = self.headers.get("Host", "localhost:8080")
+    embed_domain = f"http://{host_header}"
+    try:
+      sso_url = generate_sso_url(config, embed_domain)
+      response_data = {"url": sso_url}
+      self.send_response(200)
+      self.send_header("Content-type", "application/json")
+      self.end_headers()
+      self.wfile.write(json.dumps(response_data).encode("utf-8"))
+    except Exception as e:
+      self.send_error_response(500, f"Error generating SSO URL: {e}")
 
-    def serve_brands(self):
-        sdk = get_api_sdk()
-        if sdk is None:
-            self.send_error_response(500, "Looker API SDK not initialized. Is looker.ini configured?")
-            return
+  def serve_brands(self):
+    sdk = get_api_sdk()
+    if sdk is None:
+      self.send_error_response(500,
+                               "Looker API SDK not initialized. Is looker.ini configured?")
+      return
 
-        try:
-            # Query Looker API to get distinct brands from order_items explore
-            query = models.WriteQuery(
-                model="training_ecommerce",
-                view="order_items", # Explore name
-                fields=["products.brand"],
-                limit="20",
-                sorts=["products.brand asc"]
-            )
-            result_json = sdk.run_inline_query(
-                result_format="json",
-                body=query
-            )
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(result_json.encode("utf-8"))
+    try:
+      # Query Looker API to get distinct brands from order_items explore
+      query = models.WriteQuery(
+          model="training_ecommerce",
+          view="order_items",  # Explore name
+          fields=["products.brand"],
+          limit="20",
+          sorts=["products.brand asc"]
+      )
+      result_json = sdk.run_inline_query(
+          result_format="json",
+          body=query
+      )
+      self.send_response(200)
+      self.send_header("Content-type", "application/json")
+      self.end_headers()
+      self.wfile.write(result_json.encode("utf-8"))
 
-        except Exception as e:
-            self.send_error_response(500, f"Looker API Error: {e}")
+    except Exception as e:
+      self.send_error_response(500, f"Looker API Error: {e}")
+
 
 def run_server():
-    # Load config to verify it exists
-    load_embed_config()
-    # Try to initialize API SDK
-    get_api_sdk()
-    
-    port = 8080
-    server = HTTPServer(("localhost", port), RichAppHandler)
-    print(f"Rich App Server started at http://localhost:{port}")
-    print("Press Ctrl+C to stop.")
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print("\nStopping server...")
-        server.server_close()
+  # Load config to verify it exists
+  load_embed_config()
+  # Try to initialize API SDK
+  get_api_sdk()
+
+  port = 8080
+  server = HTTPServer(("localhost", port), RichAppHandler)
+  print(f"Rich App Server started at http://localhost:{port}")
+  print("Press Ctrl+C to stop.")
+  try:
+    server.serve_forever()
+  except KeyboardInterrupt:
+    print("\nStopping server...")
+    server.server_close()
+
 
 if __name__ == "__main__":
-    run_server()
+  run_server()
